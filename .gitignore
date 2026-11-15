@@ -1,0 +1,29 @@
+# Nunca publicar firmware, dumps, partições de recursos ou backups de instrumentos
+*.bin
+*.hex
+*.elf
+*.dfu
+*.uf2
+*.img
+*.rom
+*.fw
+*.bak
+firmware/
+dumps/
+backups/
+private/
+UI/
+# Ambiente local
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+.env
+.env.*
+.DS_Store
+.idea/
+.vscode/
+coverage.xml
+htmlcov/
+*.log

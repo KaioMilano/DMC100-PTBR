@@ -1,0 +1,23 @@
+name: Sugestão de tradução
+description: Propor ou corrigir um texto da interface PT-BR
+body:
+  - type: markdown
+    attributes:
+      value: "Não anexe firmware, backups de calibração ou dados pessoais."
+  - type: input
+    id: original
+    attributes:
+      label: Texto original (inglês)
+      placeholder: "System settings"
+    validations:
+      required: true
+  - type: input
+    id: proposed
+    attributes:
+      label: Tradução proposta (PT-BR)
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Contexto e observações de segurança
