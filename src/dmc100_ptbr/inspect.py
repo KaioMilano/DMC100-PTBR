@@ -25,8 +25,11 @@ def inspect_bytes(data: bytes, file_name: str = "<memory>") -> dict:
             "offset_hex": f"0x{offset:06X}",
             "original": original,
             "ptbr_draft": proposed,
-            "found_hex": actual.hex(),
             "matches": actual == expected,
+            "nul_terminated_match": data[offset:offset + len(expected) + 1] == expected + b"\x00",
+            "occurrences": occurrences(data, expected + b"\x00"),
+            "original_bytes": len(expected),
+            "draft_ascii_bytes": len(proposed.encode("ascii")),
         })
     return {
         "file": file_name,
@@ -35,10 +38,24 @@ def inspect_bytes(data: bytes, file_name: str = "<memory>") -> dict:
         "community_reported_v14_size": COMMUNITY_REPORTED_V14_SIZE,
         "reported_size_matches": len(data) == COMMUNITY_REPORTED_V14_SIZE,
         "matches": sum(item["matches"] for item in strings),
+        "nul_terminated_matches": sum(item["nul_terminated_match"] for item in strings),
         "total_strings": len(strings),
         "strings": strings,
         "notice": "Read-only research, not firmware compatibility/safety validation.",
     }
+
+
+def occurrences(data: bytes, needle: bytes) -> list[int]:
+    """Find every byte occurrence, including unaligned/overlapping matches.
+
+    These are candidate text starts, not confirmed string objects or xrefs.
+    """
+    result = []
+    start = 0
+    while (position := data.find(needle, start)) >= 0:
+        result.append(position)
+        start = position + 1
+    return result
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -64,7 +81,8 @@ def main(argv: list[str] | None = None) -> int:
             result = "OK" if item["matches"] else "DIVERGENTE"
             print(f"{result:10s} {item['offset_hex']} {item['original']}")
         print("IMPORTANTE: isso nao valida seguranca nem compatibilidade de gravacao.")
-    return 0 if report["matches"] == report["total_strings"] else 1
+    return 0 if (report["reported_size_matches"] and
+                 report["nul_terminated_matches"] == report["total_strings"]) else 1
 
 
 if __name__ == "__main__":

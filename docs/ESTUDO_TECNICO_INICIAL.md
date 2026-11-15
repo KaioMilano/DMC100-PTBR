@@ -2,6 +2,8 @@
 
 **Data:** 15 de novembro de 2026
 
+Atualização: veja [auditoria e viabilidade V1.4](VIABILIDADE_V14.md), que qualifica as hipóteses de arquitetura/memória, corrige dois offsets da extração e registra os testes. As afirmações comunitárias abaixo não são identificação confirmada do hardware.
+
 **Aparelho de referência:** FNIRSI DMC-100, firmware V1.3 identificado na tela *About*.
 
 ## Resumo

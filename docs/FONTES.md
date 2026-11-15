@@ -12,3 +12,5 @@
 Os offsets documentados provêm de terceiros e **ainda não foram confirmados contra o binário V1.4 neste repositório**. O projeto DOOM demonstra a execução de outro programa no hardware, **não** um multímetro operacional traduzido.
 
 Um firmware mais recente não significa necessariamente que contenha português. A FNIRSI não participa oficialmente deste projeto.
+
+Consulta de 15/11/2026 e commits das referências de engenharia reversa: [relatório de viabilidade](VIABILIDADE_V14.md). Não foram incorporados pseudocódigo, binários ou imagens dessas fontes.
