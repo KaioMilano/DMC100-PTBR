@@ -1,6 +1,6 @@
-"""Reported V1.4 string offsets; not independently confirmed.
+"""V1.4 offsets confirmed in the fingerprint documented in v14.py.
 
-These are research references, not instructions to patch a device.
+Other images remain unverified. These are not instructions to patch a device.
 """
 
 # (file offset, original ASCII text, provisional PT-BR label)
@@ -9,7 +9,8 @@ STRINGS = (
     (0x005A5C, "English", "Ingles"),
     (0x005C00, "Brightness", "Brilho"),
     (0x005C0C, "Temperature unit", "Unid. temp."),
-    (0x0058FF, "AUTO shut_down", "Deslig. auto"),
+    # Community extraction starts one byte earlier, at a leading space.
+    (0x005900, "AUTO shut_down", "Deslig. auto"),
     (0x006140, "System settings", "Ajustes sistema"),
     (0x00ADE8, "History record", "Historico"),
     (0x00AE00, "Measurement", "Medicao"),
@@ -18,7 +19,7 @@ STRINGS = (
     (0x004B6C, "Data saved", "Dado salvo"),
     (0x00554C, "Low battery", "Bat. fraca"),
     (0x005558, "Shutdown", "Desligar"),
-    (0x00B28F, "Do not use while charging", "Nao usar durante a carga"),
+    (0x00B290, "Do not use while charging", "Nao usar durante a carga"),
 )
 
 COMMUNITY_REPORTED_V14_SIZE = 95984

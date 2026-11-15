@@ -2,6 +2,8 @@
 
 **Data:** 15 de novembro de 2026
 
+Atualização: veja [auditoria e viabilidade V1.4](VIABILIDADE_V14.md) e [análise direta da amostra](ANALISE_V14_BINARIO.md). Os limites e pendências abaixo descrevem o estudo inicial; a análise posterior confirma 14 offsets, oito tabelas de fontes e base de carga `0x08007000`. As afirmações comunitárias abaixo não são identificação confirmada do hardware.
+
 **Aparelho de referência:** FNIRSI DMC-100, firmware V1.3 identificado na tela *About*.
 
 ## Resumo
