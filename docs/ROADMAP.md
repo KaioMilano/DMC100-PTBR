@@ -16,9 +16,11 @@
 ## Fase 2 — Protótipo offline
 - [ ] Revisar glossário PT-BR por usuários com conhecimento em eletricidade.
 - [x] Verificar acentuação nas oito tabelas mapeadas: chaves PT-BR testadas ausentes; estratégia de suporte continua pendente.
-- [ ] Criar comparações de layouts sem instalar firmware.
+- [x] Criar comparações autorais de layouts em 240 × 320 sem instalar firmware.
 - [ ] Documentar diffs de cada alteração proposta.
 - [ ] Analisar como JPEGs da interface são armazenados e exibidos.
+
+Fase visual: [simulador e resultados](SIMULADOR_VISUAL.md), [referências a recursos externos](RECURSOS_EXTERNOS.md). A navegação e as famílias JPEG foram investigadas; a partição externa e seus pixels continuam indisponíveis. Comparações do navegador não validam fontes embarcadas.
 
 ## Fase 3 — Segurança e qualidade
 - [ ] Validar procedimento de recuperação com fonte independente.

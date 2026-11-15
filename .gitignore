@@ -27,3 +27,6 @@ venv/
 coverage.xml
 htmlcov/
 *.log
+node_modules/
+simulator/test-results/
+simulator/playwright-report/

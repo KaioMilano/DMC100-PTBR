@@ -1,0 +1,16 @@
+{
+  "name": "dmc100-offline-simulator",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Authorial offline translation workbench; no firmware or device access",
+  "scripts": {
+    "test": "node --test tests/*.test.cjs",
+    "test:browser": "playwright test",
+    "preview:export": "node tools/export-preview.cjs"
+  },
+  "license": "MIT",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "1.65.1"
+  }
+}
