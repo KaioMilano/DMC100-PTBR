@@ -1,7 +1,7 @@
 """Read-only FNIRSI DMC-100 firmware analysis.
 
 Never writes bytes or communicates with hardware.
-Community offsets are UNVERIFIED; string matches do not prove safety,
+Offsets refer to one observed V1.4 image; matches do not prove safety,
 authenticity or compatibility with a particular device revision.
 """
 

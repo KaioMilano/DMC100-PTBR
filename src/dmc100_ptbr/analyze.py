@@ -13,6 +13,25 @@ from collections import Counter
 from pathlib import Path
 
 from .inspect import inspect_bytes, occurrences
+from .v14 import observed_profile
+
+
+def thumb_adr_candidates(data: bytes, targets: set[int]) -> list[dict]:
+    """Scan aligned halfwords for Thumb ADR T1; not a code/data classifier.
+
+    PC alignment is computed in file coordinates (requires word-aligned base).
+    Other reference forms and interior targets are not covered.
+    """
+    result = []
+    for offset in range(0, len(data) - 1, 2):
+        halfword = struct.unpack_from("<H", data, offset)[0]
+        if halfword & 0xF800 == 0xA000:
+            target = ((offset + 4) & ~3) + (halfword & 0xFF) * 4
+            if target in targets:
+                result.append({"instruction_candidate_offset": offset,
+                               "target_offset": target,
+                               "register": (halfword >> 8) & 7})
+    return result
 
 
 def analyze_bytes(data: bytes) -> dict:
@@ -37,6 +56,9 @@ def analyze_bytes(data: bytes) -> dict:
                        "zero_bytes": counts[0], "ff_bytes": counts[255]})
     report.update({
         "schema_version": 1, "vectors_candidate": vectors,
+        "observed_v14_profile": observed_profile(data),
+        "thumb_adr_t1_candidates": thumb_adr_candidates(data, {
+            offset for item in report["strings"] for offset in item["occurrences"]}),
         "ascii_candidate_runs": len(ascii_runs),
         "utf16le_ascii_candidate_runs": len(utf16_runs),
         "resource_path_candidate_offsets": [

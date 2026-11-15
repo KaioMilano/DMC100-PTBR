@@ -5,17 +5,17 @@
 - [x] Reunir estudos públicos sobre a V1.4.
 - [x] Publicar documentação, ferramenta de inspeção somente leitura e testes.
 - [ ] Obter autorização/orientação do fabricante sobre localização e redistribuição.
-- [ ] Obter arquivo original V1.4 legitimamente para análise privada.
+- [x] Obter arquivo original V1.4 para análise privada; origem e SHA-256 documentados.
 
 ## Fase 1 — Análise estática
-- [ ] Confirmar tamanho, SHA-256 e offsets no arquivo real.
+- [x] Confirmar tamanho, SHA-256 e os 14 offsets iniciais no arquivo real.
 - [ ] Mapear terminadores, tamanho das strings, duplicatas, fontes e referências.
 - [ ] Separar claramente textos de interface de textos de segurança/metrologia.
 - [ ] Coletar capturas de telas sem informações pessoais.
 
 ## Fase 2 — Protótipo offline
 - [ ] Revisar glossário PT-BR por usuários com conhecimento em eletricidade.
-- [ ] Verificar se fontes suportam acentuação.
+- [x] Verificar acentuação nas oito tabelas mapeadas: chaves PT-BR testadas ausentes; estratégia de suporte continua pendente.
 - [ ] Criar comparações de layouts sem instalar firmware.
 - [ ] Documentar diffs de cada alteração proposta.
 - [ ] Analisar como JPEGs da interface são armazenados e exibidos.

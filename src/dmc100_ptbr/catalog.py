@@ -1,6 +1,6 @@
-"""Reported V1.4 string offsets; not independently confirmed.
+"""V1.4 offsets confirmed in the fingerprint documented in v14.py.
 
-These are research references, not instructions to patch a device.
+Other images remain unverified. These are not instructions to patch a device.
 """
 
 # (file offset, original ASCII text, provisional PT-BR label)

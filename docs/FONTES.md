@@ -9,7 +9,7 @@
 5. Experimento com firmware alternativo: https://github.com/ArturBieniek4/DMC100-Doom
 6. Relato independente de hardware (confirmar revisão de placa): https://www.mydigit.cn/thread-559140-1-1.html
 
-Os offsets documentados provêm de terceiros e **ainda não foram confirmados contra o binário V1.4 neste repositório**. O projeto DOOM demonstra a execução de outro programa no hardware, **não** um multímetro operacional traduzido.
+Os offsets documentados provêm de terceiros e foram confirmados na [amostra V1.4 identificada por SHA-256](ANALISE_V14_BINARIO.md), com duas correções de espaço inicial. Isso não confirma outras versões. O projeto DOOM demonstra a execução de outro programa no hardware, **não** um multímetro operacional traduzido.
 
 Um firmware mais recente não significa necessariamente que contenha português. A FNIRSI não participa oficialmente deste projeto.
 
