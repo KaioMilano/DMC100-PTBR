@@ -1,6 +1,6 @@
 # Política de segurança técnica
 
-O DMC-100 é um instrumento usado para medições elétricas. Erros de firmware podem afetar leituras, escalas, unidades e avisos. **O projeto está restrito a análise estática.**
+O DMC-100 é um instrumento usado para medições elétricas. Erros de firmware podem afetar leituras, escalas, unidades e avisos. O projeto inclui análise, simulação visual e ensaios ARM virtuais. O mantenedor autorizou preparar candidato e primeiro teste físico em 16/11/2026; **ainda não há imagem pronta para gravar**. [Estado e preparação do teste real](PRIMEIRO_TESTE_REAL.md).
 
 ## Não fazer
 

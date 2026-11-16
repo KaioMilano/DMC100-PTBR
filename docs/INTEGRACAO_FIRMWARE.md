@@ -1,5 +1,7 @@
 # Integração real PT-BR — situação e bloqueios
 
+Atualização posterior: o mantenedor autorizou preparar instalação/primeiro teste e informou duas unidades V1.3. [Progresso e pendências para o teste real](PRIMEIRO_TESTE_REAL.md). As referências abaixo à restrição de não instalar descrevem a fase anterior; ainda não existe candidato apto a gravação.
+
 Atualização de 16/11/2026: o mantenedor optou por avançar sem contato com o fabricante. Esse contato não é pré-requisito para continuar a engenharia independente. Foi implementada uma [prova ARM do despachante de textos](DESPACHANTE_ARM.md), executada em CPU virtual e comparada com a rotina original privada. Os itens abaixo descrevem a avaliação anterior e os limites para futura instalação, não uma obrigação de solicitar autorização para cada avanço offline.
 
 Data: 16/11/2026. Base: PR #8. O mantenedor confirmou que deseja avançar do simulador para firmware PT-BR destinado ao aparelho. A confirmação autoriza o desenvolvimento, mas não comprova prontidão técnica. Permanecem as restrições de preservar o original, não gravar no equipamento, não alterar medição/calibração/segurança e não publicar arquivos proprietários.
