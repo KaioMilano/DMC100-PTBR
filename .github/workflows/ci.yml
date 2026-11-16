@@ -41,3 +41,16 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Testar interface offline no navegador
         run: npm run test:browser
+  arm-dispatch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Instalar ferramentas opcionais de CPU virtual
+        run: python -m pip install -r requirements-arm.txt
+      - name: Executar dispatcher autoral em ARM com dados sintéticos
+        run: python -m unittest discover -s tests -p test_arm_dispatch.py -v
