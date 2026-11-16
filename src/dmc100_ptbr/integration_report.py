@@ -6,14 +6,15 @@ from pathlib import Path
 
 from .arm_menu import assemble_menu
 from .arm_ui import (VirtualLanguageUI, bridge_code, draw_code, renderer_code,
-                     OWN_TEXTS, PT, DECODER, KEYS)
+                     OWN_TEXTS, PT, TITLE, RENDERER, LANGUAGE, DECODER, KEYS)
+from .arm_text_gate import gate_code, owned_table, TEXT_TRAMP
 from .arm_utf8 import assemble_decoder
 from .accent_font import budget, compact_table
-from .v14 import ACCENTS
+from .v14 import ACCENTS, LOAD_BASE
 
 
-def report(firmware=None):
-    ui = VirtualLanguageUI(firmware, execute_glyphs=firmware is not None)
+def report(firmware=None, shadow_entries=False):
+    ui = VirtualLanguageUI(firmware, execute_glyphs=firmware is not None,shadow_entries=shadow_entries)
     frames = []
     for event in (None,"down","ok","back","down","ok","ok"):
         if event:
@@ -29,9 +30,20 @@ def report(firmware=None):
                   "mixed_text_renderer_code":len(renderer_code()),"unicode_keys":2*len(ACCENTS),
                   "accent_font_compact_source":len(compact_table()),"row_pointer_table":12,
                   "authorial_texts_utf8":sum(len(t.encode("utf-8"))+1 for t in OWN_TEXTS.values())}
+    if shadow_entries:
+        components.update(text_gate_code=len(gate_code(count=len(OWN_TEXTS),language=LANGUAGE,
+                                                       source_title=LOAD_BASE+0x5A44,target_title=TITLE,
+                                                       renderer=RENDERER,fallback=TEXT_TRAMP)),
+                          owned_pointer_length_table=len(owned_table(OWN_TEXTS)),
+                          emulator_veneers=16,continuation_trampolines=16,overwritten_entry_bytes=8)
     total = sum(components.values())
     return {"scope":"Single virtual CPU, original menu optional, all drawing intercepted",
             "private_original_supplied":firmware is not None,
+            "shadow_entries":shadow_entries,
+            "virtual_rom_has_two_declared_entry_changes":shadow_entries,
+            "original_file_modified":False,
+            "text_pointer_and_length_decided_by_arm":shadow_entries,
+            "veneer_addresses_are_emulator_only":True,
             "original_sha256":None if firmware is None else hashlib.sha256(firmware).hexdigest(),
             "frames":frames,"components_logical_bytes":components,"logical_bytes_compact_runtime":total,
             "font_storage_comparison":budget(),
@@ -50,9 +62,10 @@ def report(firmware=None):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--firmware",type=Path)
+    parser.add_argument("--shadow-entries",action="store_true",help="Two entry changes in virtual ROM only, never a firmware output")
     args = parser.parse_args(argv)
     data = args.firmware.read_bytes() if args.firmware else None
-    result = report(data)
+    result = report(data,shadow_entries=args.shadow_entries)
     if args.firmware and args.firmware.read_bytes() != data:
         raise RuntimeError("Private input changed")
     print(json.dumps(result,indent=2))

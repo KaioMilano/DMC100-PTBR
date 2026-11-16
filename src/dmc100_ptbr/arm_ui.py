@@ -14,6 +14,9 @@ from .v14 import LOAD_BASE, OBSERVED_SHA256
 from .v14 import ACCENTS
 from .accent_font import compact_table
 from .arm_utf8 import assemble_decoder
+from .arm_text_gate import (GATE, OWN_TABLE, VENEER, TEXT_VENEER, MENU_VENEER,
+                            TEXT_TRAMP, MENU_TRAMP, gate_code, owned_table,
+                            entry_branch, absolute_jump)
 
 BRIDGE = 0x10002000
 DRAW = 0x10003000
@@ -48,9 +51,10 @@ def bridge_code():
     """, BRIDGE)
 
 
-def draw_code():
+def draw_code(original_entry=None, height=16):
     def call(offset):
-        return f"ldr r12, ={(LOAD_BASE + offset) | 1}\n blx r12"
+        target = original_entry if offset == ENTRY_OFFSET and original_entry is not None else LOAD_BASE+offset
+        return f"ldr r12, ={target | 1}\n blx r12"
     return _assemble(f"""
         push.w {{r4,r5,r6,r7,r8,lr}}
         sub sp,#16
@@ -79,7 +83,7 @@ def draw_code():
         ldr r2, ={CONFIRM}
         mov r3,r4
         str r5,[sp]
-        movs r6,#16
+        movs r6,#{height}
         str r6,[sp,#4]
         movs r6,#1
         str r6,[sp,#8]
@@ -119,7 +123,7 @@ def draw_code():
         ldr r2,[r7],#4
         mov r3,r4
         str r5,[sp]
-        movs r12,#16
+        movs r12,#{height}
         str r12,[sp,#4]
         movs r12,#1
         str r12,[sp,#8]
@@ -239,7 +243,7 @@ def renderer_code():
 
 
 class VirtualLanguageUI:
-    def __init__(self, firmware=None, language=1, execute_glyphs=False):
+    def __init__(self, firmware=None, language=1, execute_glyphs=False, shadow_entries=False):
         if type(language) is not int or language not in range(3):
             raise ValueError("Unsupported initial locale")
         if firmware is not None and hashlib.sha256(firmware).hexdigest() != OBSERVED_SHA256:
@@ -251,19 +255,48 @@ class VirtualLanguageUI:
         from unicorn import arm_const as a
         self.a, self.firmware, self.trace = a, firmware, []
         self.execute_glyphs = execute_glyphs
+        self.shadow_entries = shadow_entries
+        self.shadow_patches = {}
         self.cpu = cpu = Uc(UC_ARCH_ARM, UC_MODE_THUMB | UC_MODE_MCLASS)
         cpu.ctl_set_cpu_model(a.UC_CPU_ARM_CORTEX_M4)
         cpu.mem_map(0x08000000, 0x20000)
         cpu.mem_map(0x20000000, 0x8000)
         cpu.mem_map(0x10000000, 0x10000)
+        if shadow_entries:
+            cpu.mem_map(VENEER,0x1000)
         if firmware is not None:
             cpu.mem_write(LOAD_BASE, firmware)
         self.ranges = []
-        for address, code in ((SELECTOR, assemble_menu()), (BRIDGE, bridge_code()), (DRAW, draw_code()),
+        for address, code in ((SELECTOR, assemble_menu()), (BRIDGE, bridge_code()), (DRAW, draw_code(MENU_TRAMP if shadow_entries else None)),
                               (DECODER, assemble_decoder(DECODER, KEYS)), (RENDERER, renderer_code())):
             cpu.mem_write(address, code)
             self.ranges.append((address, address + len(code)))
         self.renderer_end = next(hi for lo, hi in self.ranges if lo == RENDERER)
+        if shadow_entries:
+            gate = gate_code(count=len(OWN_TEXTS),language=LANGUAGE,
+                             source_title=LOAD_BASE+0x5A44,target_title=TITLE,
+                             renderer=RENDERER,fallback=TEXT_TRAMP)
+            cpu.mem_write(GATE,gate)
+            self.ranges.append((GATE,GATE+len(gate)))
+            cpu.mem_write(OWN_TABLE,owned_table(OWN_TEXTS))
+            for offset, veneer, trampoline, target, registers in (
+                    (0x12F2,TEXT_VENEER,TEXT_TRAMP,GATE,"r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,lr"),
+                    (ENTRY_OFFSET,MENU_VENEER,MENU_TRAMP,DRAW,"r1,r2,r3,r4,r5,r6,r7,r8,r9,lr")):
+                # Exactly one position-independent PUSH.W is relocated. Reject
+                # any profile that does not match; never move PC-relative code.
+                expected = _assemble(f"push.w {{{registers}}}",LOAD_BASE+offset)
+                stolen = firmware[offset:offset+4] if firmware is not None else expected
+                if stolen != expected or len(expected) != 4:
+                    raise ValueError("Entry prologue is not the verified PUSH.W")
+                patch = entry_branch(LOAD_BASE+offset,veneer)
+                self.shadow_patches[offset] = patch
+                cpu.mem_write(LOAD_BASE+offset,patch)
+                veneer_code = absolute_jump(veneer,target)
+                cpu.mem_write(veneer,veneer_code)
+                continuation = stolen+entry_branch(trampoline+4,LOAD_BASE+offset+4)
+                cpu.mem_write(trampoline,continuation)
+                self.ranges.extend(((veneer,veneer+len(veneer_code)),(trampoline,trampoline+len(continuation))))
+            cpu.mem_protect(VENEER,0x1000,UC_PROT_READ|UC_PROT_EXEC)
         cpu.mem_write(DATA, struct.pack("<III", LOAD_BASE + 0x5A50, LOAD_BASE + 0x5A5C, PT))
         for address, text in OWN_TEXTS.items():
             cpu.mem_write(address, text.encode("utf-8") + b"\0")
@@ -278,12 +311,14 @@ class VirtualLanguageUI:
         cpu.hook_add(UC_HOOK_MEM_WRITE, self._write)
         self.returned = False
         self.operation = None
+        self.authorial_height = 16
 
     def _write(self, cpu, access, address, size, value, user):
         in_stack = STACK - 0x800 <= address <= STACK - size
         in_state = STATE <= address and address + size <= STATE + 12
         language = address == LANGUAGE and size == 1
-        if not (in_stack or self.operation == "event" and (in_state or language)):
+        if not (in_stack or self.operation == "event" and (in_state or language)
+                or self.operation == "settings_probe" and language):
             raise RuntimeError("Unexpected virtual write")
 
     def _code(self, cpu, address, size, user):
@@ -292,12 +327,38 @@ class VirtualLanguageUI:
             self.returned = True
             cpu.emu_stop()
             return
+        if self.shadow_entries and address in (RENDERER,TEXT_TRAMP):
+            regs = [cpu.reg_read(getattr(a,f"UC_ARM_REG_R{i}")) for i in range(4)]
+            extra = list(struct.unpack("<III",cpu.mem_read(cpu.reg_read(a.UC_ARM_REG_SP),12)))
+            self.gate_contracts.append({"route":"owned" if address == RENDERER else "native",
+                                       "registers":[cpu.reg_read(getattr(a,f"UC_ARM_REG_R{i}")) for i in range(13)],
+                                       "flags":cpu.reg_read(a.UC_ARM_REG_APSR),"sp":cpu.reg_read(a.UC_ARM_REG_SP),
+                                       "lr":cpu.reg_read(a.UC_ARM_REG_LR),"stack_args":extra})
+            call = "ascii_fragment" if STACK-0x800 <= regs[2] < STACK else "text"
+            self.trace.append({"call":call,"args":regs,"stack_args":extra})
+            if address == RENDERER:
+                # Observe the CPU's decision only; no pointer/length supplied.
+                if regs[2] not in OWN_TEXTS or cpu.reg_read(a.UC_ARM_REG_R12) != len(OWN_TEXTS[regs[2]].encode("utf-8"))+1:
+                    raise RuntimeError("ARM gate selected an invalid owned buffer")
+            elif not self.execute_glyphs:
+                cpu.reg_write(a.UC_ARM_REG_PC,cpu.reg_read(a.UC_ARM_REG_LR))
+                return
+        if self.shadow_entries and address == MENU_TRAMP and self.firmware is None:
+            cpu.reg_write(a.UC_ARM_REG_PC,cpu.reg_read(a.UC_ARM_REG_LR))
+            return
         offset = address - LOAD_BASE
+        if self.operation == "settings_probe" and offset in (0x9274,0x558C):
+            self.trace.append({"call":"jpeg_resource" if offset == 0x9274 else "brightness_preview",
+                               "args":[cpu.reg_read(getattr(a,f"UC_ARM_REG_R{i}")) for i in range(4)],"stack_args":[]})
+            cpu.reg_write(a.UC_ARM_REG_PC,cpu.reg_read(a.UC_ARM_REG_LR))
+            return
+        if self.shadow_entries and offset == 0x12F2:
+            return  # execute the actual B.W in the shadow ROM
         if offset == ENTRY_OFFSET and self.redirect:
             self.redirect = False
             cpu.reg_write(a.UC_ARM_REG_PC, DRAW | 1)
             return
-        if offset == ENTRY_OFFSET and self.firmware is None:
+        if offset == ENTRY_OFFSET and self.firmware is None and not self.shadow_entries:
             # Public synthetic seam, never described as execution of V1.4.
             cpu.reg_write(a.UC_ARM_REG_PC, cpu.reg_read(a.UC_ARM_REG_LR))
             return
@@ -339,8 +400,10 @@ class VirtualLanguageUI:
             cpu.reg_write(a.UC_ARM_REG_APSR, 0xF8000000)
             return
         allowed = any(lo <= address < hi for lo, hi in self.ranges)
+        allowed |= self.shadow_entries and offset in self.shadow_patches
         allowed |= self.firmware is not None and ENTRY_OFFSET <= offset < END_OFFSET
         allowed |= self.execute_glyphs and LOAD_BASE+0x12F2 <= address < LOAD_BASE+0x1AB8
+        allowed |= self.operation == "settings_probe" and 0x5C34 <= offset < 0x60C0
         if not allowed:
             raise RuntimeError("Unexpected virtual execution")
 
@@ -348,27 +411,40 @@ class VirtualLanguageUI:
     def state(self):
         return struct.unpack("<III", self.cpu.mem_read(STATE, 12))
 
-    def _run(self, address, operation, event=0, redirect=False):
+    def _run(self, address, operation, event=0, redirect=False, text_args=None, flags=0xA8000000):
         a, cpu = self.a, self.cpu
         self.trace, self.returned, self.operation, self.redirect = [], False, operation, redirect
         self.native_hash, self.native_calls = hashlib.sha256(), 0
+        self.gate_contracts = []
         for i in range(13):
             cpu.reg_write(getattr(a, f"UC_ARM_REG_R{i}"), 0x11110000 + i)
         cpu.reg_write(a.UC_ARM_REG_R3, event)
         cpu.reg_write(a.UC_ARM_REG_SP, STACK)
         cpu.reg_write(a.UC_ARM_REG_LR, RETURN | 1)
+        cpu.reg_write(a.UC_ARM_REG_APSR,flags)
+        if text_args is not None:
+            for i,value in enumerate(text_args[:4]):
+                cpu.reg_write(getattr(a,f"UC_ARM_REG_R{i}"),value)
+            cpu.mem_write(STACK,struct.pack("<III",*text_args[4:]))
         saved = [cpu.reg_read(getattr(a, f"UC_ARM_REG_R{i}")) for i in range(4, 12)]
         cpu.emu_start(address | 1, 0, timeout=5_000_000, count=2_000_000)
         if (not self.returned or cpu.reg_read(a.UC_ARM_REG_SP) != STACK
                 or saved != [cpu.reg_read(getattr(a, f"UC_ARM_REG_R{i}")) for i in range(4, 12)]
-                or cpu.mem_read(LANGUAGE, 1)[0] != self.state[0]):
+                or self.operation != "settings_probe" and cpu.mem_read(LANGUAGE, 1)[0] != self.state[0]):
             raise RuntimeError("Integrated UI contract failed")
-        if self.firmware is not None and bytes(cpu.mem_read(LOAD_BASE, len(self.firmware))) != self.firmware:
-            raise RuntimeError("Original virtual ROM changed")
+        if self.firmware is not None:
+            expected = bytearray(self.firmware)
+            for offset,patch in self.shadow_patches.items():
+                expected[offset:offset+4] = patch
+            if bytes(cpu.mem_read(LOAD_BASE,len(expected))) != expected:
+                raise RuntimeError("Virtual ROM differs outside declared shadow entries")
         return {"state": self.state, "trace": list(self.trace),
                 "original_menu_executed": self.firmware is not None and operation == "render",
                 "original_glyph_boundary_calls": self.native_calls,
                 "original_glyph_trace_sha256": self.native_hash.hexdigest(),
+                "shadow_entry_ranges":list(self.shadow_patches),
+                "text_routing_by_arm":self.shadow_entries,
+                "language_ram":cpu.mem_read(LANGUAGE,1)[0],
                 "firmware_generated": False, "installable_ready": False}
 
     def event(self, name):
@@ -376,10 +452,19 @@ class VirtualLanguageUI:
             raise ValueError("Unsupported virtual event")
         return self._run(BRIDGE, "event", EVENTS[name])
 
+    def probe_original_language_action(self, action):
+        if self.firmware is None or type(action) is not int or action not in (1,2,3):
+            raise ValueError("Private original language/adjacent-action probe only")
+        return self._run(LOAD_BASE+0x5C34,"settings_probe",text_args=(1,1,action,1,0,0,0))
+
     def render(self, authorial_height=16):
         if authorial_height not in (12,16,24,32):
             raise ValueError("Unsupported authorial height")
         self.authorial_height = authorial_height
+        if self.shadow_entries:
+            code = draw_code(MENU_TRAMP,authorial_height)
+            self.cpu.mem_write(DRAW,code)
+            self.cpu.ctl_remove_cache(DRAW,DRAW+len(code))
         # CPU hook redirects original entry only for this top-level call. The
         # authorial wrapper calls the unchanged original, then redraws rows.
-        return self._run(LOAD_BASE + ENTRY_OFFSET, "render", redirect=True)
+        return self._run(LOAD_BASE + ENTRY_OFFSET, "render", redirect=not self.shadow_entries)
