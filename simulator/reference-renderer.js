@@ -1,9 +1,9 @@
 (function(root,factory){const api=factory(typeof module==='object'&&module.exports?require('./model.js'):root.DmcSimulator,typeof module==='object'&&module.exports?require('./navigation.js'):root.DmcNavigation,typeof module==='object'&&module.exports?require('./navigation-catalog.js'):root.DmcNavigationCatalog);if(typeof module==='object'&&module.exports)module.exports=api;else root.DmcReference=api;})(globalThis,function(M,N,C){
   'use strict';
   const ids=new Map(C.entries.map(e=>[e.id,e]));
-  function t(id,language,variant){const e=ids.get(id);if(!e)throw new Error('Unknown reference label');return language==='en'?e.en:variant==='full'?e.pt:variant==='ascii'?M.ascii(e.compact):e.compact;}
+  function t(id,language,variant){const e=ids.get(id);if(!e)throw new Error('Unknown reference label');return language==='zh'?e.zh:language==='en'?e.en:variant==='full'?e.pt:variant==='ascii'?M.ascii(e.compact):e.compact;}
   function scene(state,options={}){
-    const o={language:'pt',font:16,variant:'compact',family:'sans',...options};M.normalize({...o,screen:'measurement'});
+    const o={language:'pt',font:16,variant:'compact',family:'sans',...options};M.normalize({...o,language:o.language==='zh'?'en':o.language,screen:'measurement'});
     const shapes=[],lines=[],hotspots=[],label=id=>t(id,o.language,o.variant);
     const rect=(x,y,w,h,fill,stroke='none',rx=0)=>shapes.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" fill="${fill}" stroke="${stroke}"/>`);
     const text=(id,x,y,w,value,size=o.font,color='#34404c',height=24)=>lines.push({id,x,y,w,text:value,size,color,maxHeight:height});
@@ -30,21 +30,27 @@
         state.records.slice(0,6).forEach((r,i)=>{const y=144+i*29;text('rowNumber'+i,13,y,22,String(i+1)+'.',14,'#94a4ae');text('rowMode'+i,41,y,77,r.mode,14);text('rowValue'+i,124,y,75,r.value,14);text('rowUnit'+i,201,y,34,r.unit,12);});
       }else if(state.tab===1){
         const names=['language','brightness','shutdownAuto'];text('settingTitle',27,127,205,label(names[state.page]),o.font,'#6b8294');
-        const options=state.page===0?[label('chinese'),label('english')]:state.page===1?['20%','40%','60%','80%','100%','°C','°F']:[label('off'),'5 min','15 min','30 min'];
+        const options=state.page===0?N.locales.map(l=>label(l.labelId)+(l.proposed?' *':'')):state.page===1?['20%','40%','60%','80%','100%','°C','°F']:[label('off'),'5 min','15 min','30 min'];
         const selected=state.page===0?state.settings.language:state.page===1?state.settings.brightness:state.settings.auto;
         if(state.page===1)text('temperatureTitle',18,150,218,label('temperature'),12,'#8999a7',18);
         const start=state.page===1?174:166,step=state.page===1?17:29;
-        options.forEach((value,i)=>{const y=start+i*step;const active=state.focus==='options'?state.option===i:state.page===1?(i<5?selected===i:(i===5?'°C':'°F')===state.settings.unit):selected===i;
+        options.forEach((value,i)=>{const y=start+i*step;const active=state.focus==='language-confirm'?state.pendingLanguage===i:state.focus==='options'?state.option===i:state.page===1?(i<5?selected===i:(i===5?'°C':'°F')===state.settings.unit):selected===i;
           rect(26,y-11,11,11,active?'#2bb9ec':'none','#b0c0cd');text('option'+i,45,y,179,value,state.page===1?12:o.font,'#73899a',state.page===1?18:24);box('OPTION',i,21,y-16,209,step);});
+        if(state.page===0){
+          if(state.focus==='language-confirm'){
+            text('applyLanguage',20,252,214,label('applyLanguage'),13,'#3b718b',20);
+            [['confirm','APPLY_LANGUAGE'],['cancel','CANCEL_LANGUAGE']].forEach(([id,action],i)=>{const x=19+i*105;rect(x,268,98,25,i?'#a4b3bf':'#2bb9ec','none',3);text(id,x+8,285,90,label(id),13,'#fff',20);box(action,0,x,268,98,25);});
+          }else text('languageProposal',20,257,214,'* '+label('languageProposal'),10,'#7e91a0',16);
+        }
         for(let i=0;i<3;i++){rect(105+i*13,299,6,6,i===state.page?'#2bb9ec':'#afbfc9','none',3);box('PAGE',i,100+i*13,292,13,22);}
       }else if(state.tab===2){
         text('notice',63,137,160,'△ '+label('notice'),20,'#c49661',28);
-        const msg=o.language==='en'?['Reset all','settings?']:o.variant==='full'?['Restaurar todas','as configurações?']:o.variant==='ascii'?['Restaurar','os ajustes?']:['Restaurar','os ajustes?'];
+        const msg=o.language==='zh'?['重置所有设置？']:o.language==='en'?['Reset all','settings?']:o.variant==='full'?['Restaurar todas','as configurações?']:o.variant==='ascii'?['Restaurar','os ajustes?']:['Restaurar','os ajustes?'];
         msg.forEach((line,i)=>text('resetMessage'+i,45,174+i*25,190,line,o.font,'#8b99a2'));
         ['reset','return'].forEach((id,i)=>{rect(65,225+i*34,111,25,state.focus==='confirm'&&state.option===i?'#2bb9ec':'#9eacb6','none',2);text(id,76,244+i*34,99,label(id),14,'#fff',20);box(i?'BACK':'RESET_CONFIRM',0,65,225+i*34,111,25);});
       }else{
         text('brand',39,162,184,'DMC-100',28,'#29afd9',36);text('authorial',40,193,188,label('authorial'),12,'#8193a1',18);
-        text('version',51,230,180,'DMC-100 V1.3',16,'#7c8e9e');text('reference',25,270,210,o.language==='en'?'Video reference · authored':'Referência do vídeo · autoral',11,'#8a9ca9',16);
+        text('version',51,230,180,'DMC-100 V1.3',16,'#7c8e9e');text('reference',25,270,210,o.language==='zh'?'视频参考 · 原创布局':o.language==='en'?'Video reference · authored':'Referência do vídeo · autoral',11,'#8a9ca9',16);
       }
       text('focus',9,318,222,label('demo'),9,'#879ba8',12);
     }

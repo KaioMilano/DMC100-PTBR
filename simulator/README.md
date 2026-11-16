@@ -6,9 +6,13 @@ São layouts autorais em dimensões de **240 × 320 pixels**, com valores fixos 
 
 ## Usar
 
+**Novo: Português (Brasil) selecionável no menu do simulador.** Acesse Configurações → Idioma → Português (BR) * → Confirmar idioma. A visualização passa a acompanhar a escolha; chinês/inglês continuam disponíveis. Cancelar não aplica a seleção. O asterisco indica proposta inexistente no firmware original. [Escopo e integração pendente](../docs/SELECAO_PTBR.md).
+
+A escolha é volátil; recarregar volta ao estado inicial inglês. O chinês exibido é uma prévia autoral não validada e exige fonte CJK no computador. A comparação externa não muda a escolha do modelo. O catálogo passa a 38 entradas e os testes a 26 casos Node/13 de navegador.
+
 Na navegação V1.3, escolha inglês, PT-BR ou ambos. Use os atalhos externos ou os quatro ícones superiores. HOLD/← e V-A/→ navegam, MODE confirma, SAVE sai do menu; na medição, MODE alterna variante, V-A avança categoria e HOLD alterna apenas o indicador. SAVE curto adiciona fixture ao histórico; segurar SAVE abre o menu (600 ms é limiar autoral, não medição do equipamento). Energia liga/desliga só a simulação. Todos esses mapeamentos são provisórios e estão descritos no [relatório do vídeo](../docs/VIDEO_V13_NAVEGACAO.md).
 
-Teclado: setas, Enter/M, H, S, Shift+S, Esc e P. O estado é volátil, sem persistência. Reset precisa de confirmação e só restaura opções da página. Nas configurações, MODE entra nas subpáginas, setas escolhem a página, MODE entra em opções e confirma a escolhida. Brilho/unidade/desligamento vêm da análise estática V1.4 e não foram demonstrados no vídeo; níveis de brilho são uma proposta de interação. O catálogo estendido tem 33 entradas com evidência, incluindo 16 textos confirmados em 21 ocorrências.
+Teclado: setas, Enter/M, H, S, Shift+S, Esc e P. O estado é volátil, sem persistência. Reset precisa de confirmação e só restaura opções da página. Nas configurações, MODE entra nas subpáginas, setas escolhem a página, MODE entra em opções e confirma a escolhida. Brilho/unidade/desligamento vêm da análise estática V1.4 e não foram demonstrados no vídeo; níveis de brilho são uma proposta de interação. O catálogo estendido tem 38 entradas com evidência, incluindo 16 textos confirmados em 21 ocorrências.
 
 Para a bancada de tipografia em **lab.html**:
 
@@ -37,7 +41,7 @@ npm run test:browser
 npm run preview:export
 ```
 
-Os testes de navegador abrem `file://`, verificam que não há requisições HTTP, exercitam controles, exportações, acentos, excessos, fluxos de navegação e layout móvel. São 20 casos Node e 11 testes de navegador; os casos anteriores incluem 120 combinações de tela/idioma/tamanho/variante. No Linux, `playwright install --with-deps chromium` também prepara bibliotecas do navegador.
+Os testes de navegador abrem `file://`, verificam que não há requisições HTTP, exercitam controles, exportações, acentos, excessos, fluxos de navegação e layout móvel. São 26 casos Node e 13 testes de navegador; os casos anteriores incluem 120 combinações de tela/idioma/tamanho/variante. No Linux, `playwright install --with-deps chromium` também prepara bibliotecas do navegador.
 
 Pode-se usar um Chrome já instalado em vez do Chromium baixado, apontando `DMC_CHROME_PATH` para seu executável. No PowerShell:
 

@@ -2,6 +2,11 @@
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.DmcNavigation=api;})(globalThis,function(){
   'use strict';
   const tabs=['history','settings','reset','about'];
+  // Prototype IDs preserve the observed 0/1 order; ID 2 is a proposal only.
+  const locales=[{id:0,tag:'zh-Hans',renderLanguage:'zh',labelId:'chinese',proposed:false},
+    {id:1,tag:'en',renderLanguage:'en',labelId:'english',proposed:false},
+    {id:2,tag:'pt-BR',renderLanguage:'pt',labelId:'portuguese',proposed:true}];
+  function locale(id){const item=locales.find(l=>l.id===id);if(!item)throw new Error('Invalid locale');return item;}
   const modes=[
     {id:'A',variants:[{id:'dc',title:'A DC',value:'0.000',unit:'A'},{id:'ac',title:'A ~',value:'0.000',unit:'A'}]},
     {id:'V',variants:[{id:'dc',title:'V DC',value:'0.000',unit:'V'},{id:'ac',title:'V ~',value:'0.000',unit:'V'}]},
@@ -14,25 +19,31 @@
     {mode:'A ~',value:'0.000',unit:'A'},{mode:'A ~',value:'0.000',unit:'A'},
     {mode:'V ~',value:'230.0',unit:'V'},{mode:'V ~',value:'230.0',unit:'V'},
     {mode:'V DC',value:'0.000',unit:'V'},{mode:'V DC',value:'0.000',unit:'V'}];
-  function initial(){return{power:true,area:'measurement',tab:0,focus:'tabs',page:0,option:0,mode:0,variant:0,held:false,settings:{language:1,brightness:3,unit:'°C',auto:2},records:initialRecords(),notice:''};}
+  function initial(){return{power:true,area:'measurement',tab:0,focus:'tabs',page:0,option:0,pendingLanguage:null,mode:0,variant:0,held:false,settings:{language:1,brightness:3,unit:'°C',auto:2},records:initialRecords(),notice:''};}
   const wrap=(n,length)=>(n+length)%length;
   function display(state){
     const value={...modes[state.mode].variants[state.variant]};
     if(value.id==='temperature'&&state.settings.unit==='°F'){value.value='73.4';value.unit='°F';}
     return value; // Every number is a fixed synthetic fixture, never computed.
   }
-  function optionCount(state){return state.page===0?2:state.page===1?7:4;}
+  function optionCount(state){return state.page===0?locales.length:state.page===1?7:4;}
   function applyOption(state){
     if(state.page===0)state.settings.language=state.option;
     else if(state.page===1){if(state.option<5)state.settings.brightness=state.option;else state.settings.unit=state.option===5?'°C':'°F';}
     else state.settings.auto=state.option;
   }
   function transition(previous,event){
-    const allowed=['HOLD','LEFT','RIGHT','MODE','SAVE','MENU','POWER','BACK','GO','PAGE','OPTION','MODE_SELECT'];
+    const allowed=['HOLD','LEFT','RIGHT','MODE','SAVE','MENU','POWER','BACK','GO','PAGE','OPTION','MODE_SELECT','APPLY_LANGUAGE','CANCEL_LANGUAGE'];
     if(!event||!allowed.includes(event.type))throw new Error('Unknown navigation event');
     const s={...previous,settings:{...previous.settings},records:previous.records.map(r=>({...r})),notice:''};
-    if(event.type==='POWER'){s.power=!s.power;return s;}
+    if(event.type==='POWER'){s.power=!s.power;s.pendingLanguage=null;if(s.focus==='language-confirm')s.focus='pages';return s;}
     if(!s.power)return s;
+    if(event.type==='CANCEL_LANGUAGE'||(event.type==='BACK'&&s.focus==='language-confirm')){if(s.focus!=='language-confirm')throw new Error('No language awaiting confirmation');s.pendingLanguage=null;s.focus='options';return s;}
+    if(event.type==='APPLY_LANGUAGE'||(event.type==='MODE'&&s.focus==='language-confirm')){
+      if(s.focus!=='language-confirm'||s.pendingLanguage===null)throw new Error('No language awaiting confirmation');
+      s.settings.language=locale(s.pendingLanguage).id;s.pendingLanguage=null;s.focus='pages';s.notice='language';return s;
+    }
+    if(['GO','PAGE','MENU','SAVE','MODE_SELECT'].includes(event.type)){s.pendingLanguage=null;if(s.focus==='language-confirm')s.focus='pages';}
     if(event.type==='GO'){
       if(event.area==='measurement'){s.area='measurement';s.focus='tabs';return s;}
       if(!tabs.includes(event.area))throw new Error('Unknown area');
@@ -48,7 +59,9 @@
     }
     if(event.type==='OPTION'){
       if(s.area!=='menu'||s.tab!==1||!Number.isInteger(event.index)||event.index<0||event.index>=optionCount(s))throw new Error('Invalid option');
-      s.option=event.index;applyOption(s);s.focus='pages';s.notice='setting';return s;
+      s.option=event.index;
+      if(s.page===0){s.pendingLanguage=locale(s.option).id;s.focus='language-confirm';return s;}
+      applyOption(s);s.focus='pages';s.notice='setting';return s;
     }
     if(event.type==='MENU'){s.area=s.area==='measurement'?'menu':'measurement';s.focus='tabs';return s;}
     if(event.type==='BACK'){
@@ -79,6 +92,7 @@
       if(s.tab===1){
         if(s.focus==='tabs')s.focus='pages';
         else if(s.focus==='pages'){s.focus='options';s.option=s.page===0?s.settings.language:s.page===1?s.settings.brightness:s.settings.auto;}
+        else if(s.page===0){s.pendingLanguage=locale(s.option).id;s.focus='language-confirm';}
         else {applyOption(s);s.focus='pages';s.notice='setting';}
       }else if(s.tab===2){
         if(s.focus!=='confirm'){s.focus='confirm';s.option=1;}
@@ -94,5 +108,5 @@
       pairedHalfWidthBytes:count*[12,16,24,32].reduce((n,h)=>n+2+Math.ceil((h/2)/8)*h,0),
       notice:'Hypothetical authorial glyph storage only; no font, patch or available-memory claim.'};
   }
-  return{tabs,modes,initial,transition,display,accentBudget};
+  return{tabs,locales,locale,modes,initial,transition,display,accentBudget};
 });

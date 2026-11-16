@@ -50,7 +50,39 @@ test('comparison language changes labels without changing readings',()=>{
   assert.deepEqual(values('en'),values('pt'));assert.deepEqual(values('pt'),['0.000','A']);
 });
 test('extended catalog has unique IDs and keeps observed offsets',()=>{
-  assert.equal(R.catalog.entries.length,33);assert.equal(new Set(R.catalog.entries.map(e=>e.id)).size,33);
+  assert.equal(R.catalog.entries.length,38);assert.equal(new Set(R.catalog.entries.map(e=>e.id)).size,38);
   assert.equal(R.catalog.entries.flatMap(e=>e.occurrences).length,21);
   assert.ok(R.catalog.entries.filter(e=>e.evidence==='video-v13').every(e=>e.context&&e.occurrences.length===0));
+});
+test('PT-BR is a third proposed locale and existing locale IDs remain intact',()=>{
+  assert.deepEqual(N.locales.map(l=>[l.id,l.tag]),[[0,'zh-Hans'],[1,'en'],[2,'pt-BR']]);
+  assert.equal(N.locale(2).proposed,true);assert.equal(N.locale(0).proposed,false);assert.throws(()=>N.locale(9));
+});
+test('language click requires confirmation and cancellation leaves English active',()=>{
+  let s=step(N.initial(),'GO',{area:'settings'});s=step(s,'OPTION',{index:2});
+  assert.equal(s.settings.language,1);assert.equal(s.pendingLanguage,2);assert.equal(s.focus,'language-confirm');
+  const pending=s;s=step(s,'CANCEL_LANGUAGE');assert.equal(s.settings.language,1);assert.equal(s.pendingLanguage,null);assert.equal(pending.pendingLanguage,2);
+});
+test('MODE confirms Portuguese and can return to both original languages',()=>{
+  let s=step(N.initial(),'PAGE',{index:0});s=step(s,'MODE');s=step(s,'RIGHT');s=step(s,'MODE');
+  assert.equal(s.settings.language,1);s=step(s,'MODE');assert.equal(N.locale(s.settings.language).tag,'pt-BR');
+  for(const index of [0,1,2]){s=step(s,'OPTION',{index});s=step(s,'APPLY_LANGUAGE');assert.equal(s.settings.language,index);}
+});
+test('leaving a pending choice never applies it and confirmation cannot be stale',()=>{
+  for(const event of ['BACK','SAVE','MENU','POWER']){
+    let s=step(N.initial(),'PAGE',{index:0});s=step(s,'OPTION',{index:2});s=step(s,event);
+    assert.equal(s.settings.language,1);assert.equal(s.pendingLanguage,null);
+  }
+  assert.throws(()=>step(N.initial(),'APPLY_LANGUAGE'));assert.throws(()=>step(N.initial(),'CANCEL_LANGUAGE'));
+});
+test('selecting locale leaves readings, history and other settings untouched',()=>{
+  let s=step(N.initial(),'PAGE',{index:0}),before=JSON.stringify({display:N.display(s),records:s.records,brightness:s.settings.brightness,unit:s.settings.unit,auto:s.settings.auto});
+  s=step(s,'OPTION',{index:2});s=step(s,'APPLY_LANGUAGE');
+  assert.equal(JSON.stringify({display:N.display(s),records:s.records,brightness:s.settings.brightness,unit:s.settings.unit,auto:s.settings.auto}),before);
+});
+test('Chinese preview is authored and Portuguese third choice is labelled proposal',()=>{
+  const s=step(N.initial(),'GO',{area:'settings'});
+  for(const language of ['zh','en','pt'])assert.equal(R.scene(s,{language}).lines.filter(l=>/^option\d$/.test(l.id)).length,3);
+  assert.ok(R.catalog.entries.every(e=>typeof e.zh==='string'&&e.zhEvidence==='authored-preview-unreviewed'));
+  assert.match(R.render(s,{language:'pt'}),/Português \(BR\) \*/);
 });
