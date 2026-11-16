@@ -1,7 +1,7 @@
 /* Explicit opt-in; reads a private sample and emits only reviewed metadata. */
 const fs=require('node:fs');const crypto=require('node:crypto');const assert=require('node:assert/strict');
-const catalog=require('../catalog.js');
-if(!process.argv[2]) {console.error('Usage: node tools/verify-private-catalog.cjs PATH_TO_PRIVATE_V14');process.exitCode=2;}
+const catalog=require(process.argv.includes('--navigation')?'../navigation-catalog.js':'../catalog.js');
+if(!process.argv[2]) {console.error('Usage: node tools/verify-private-catalog.cjs PATH_TO_PRIVATE_V14 [--navigation]');process.exitCode=2;}
 else {
   try {
     const data=fs.readFileSync(process.argv[2]), hash=buffer=>crypto.createHash('sha256').update(buffer).digest('hex');

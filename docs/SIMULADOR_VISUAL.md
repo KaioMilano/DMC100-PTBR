@@ -1,5 +1,7 @@
 # Fase 02 — simulador visual autoral
 
+Registro da fase do PR #6. A bancada descrita abaixo passou para `simulator/lab.html`; a entrada `index.html` agora oferece a [navegação orientada pelo vídeo V1.3](VIDEO_V13_NAVEGACAO.md). O protótipo verde abaixo é autoral e não representa uma captura V1.4.
+
 Data: 15/11/2026. Base: PR #5, head `f589fe0`. O PR #5 passou por revisão final de código, diffs, testes e escopo. Seus 27 testes foram repetidos com a amostra privada, sem alteração de hash, e a CI já registrada passou nas quatro combinações. Não foram encontrados impedimentos para merge como ferramenta de pesquisa somente leitura; a recomendação foi publicada no PR. Nenhum merge foi efetuado. O novo PR parte dessa branch enquanto ela permanece aberta.
 
 ## Resultado
