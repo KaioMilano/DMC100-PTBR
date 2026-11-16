@@ -2,7 +2,7 @@
 
 Projeto comunitário e **não oficial** para pesquisar a tradução da interface do multímetro/alicate amperímetro **FNIRSI DMC-100** para português do Brasil.
 
-> **STATUS: PESQUISA / PRÉ-ALFA. NÃO EXISTE FIRMWARE PT-BR VALIDADO PARA INSTALAÇÃO.** Não grave modificações experimentais em aparelhos usados para medições elétricas. Este repositório contém somente ferramentas de análise estática e documentação.
+> **STATUS: PROTÓTIPO OFFLINE / PESQUISA ARM. NÃO EXISTE FIRMWARE PT-BR VALIDADO PARA INSTALAÇÃO.** Não grave modificações experimentais em aparelhos usados para medições elétricas. O repositório contém simulador autoral, ferramentas de análise, experimentos de CPU virtual e documentação.
 
 ## Objetivos
 
@@ -60,6 +60,8 @@ python -m src.dmc100_ptbr.layout --width 220 --cell 12
 Os três testes de integração com a amostra privada só rodam quando `DMC100_V14_PATH` aponta explicitamente para o arquivo local. A CI executa 24 testes sintéticos e ignora os três privados; nunca baixa firmware. Veja os comandos e resultados no relatório do binário.
 
 ## Simulador visual offline
+
+Uma [versão testável no computador](docs/VERSAO_TESTAVEL.md) pode ser empacotada com `python -m src.dmc100_ptbr.preview_package ../DMC100-PTBR-alfa-offline-1.zip`. Extraia o ZIP inteiro e abra `ABRIR.html`. O seletor trilíngue autoral também tem ensaios próprios em ARM virtual, separados do navegador; não é o menu original modificado.
 
 **Português (Brasil) já é selecionável no menu do protótipo:** Configurações → Idioma → Português (BR) * → Confirmar idioma. Chinês e inglês são mantidos. É uma proposta offline; não acrescenta idioma ao equipamento. [Estado da seleção e próximos passos](docs/SELECAO_PTBR.md).
 

@@ -1,6 +1,6 @@
 const {test,expect}=require('@playwright/test');
 const {pathToFileURL}=require('node:url');const path=require('node:path');
-const url=pathToFileURL(path.resolve(__dirname,'../lab.html')).href;
+const url=pathToFileURL(path.resolve(process.env.DMC_PREVIEW_ROOT||path.resolve(__dirname,'..'),'lab.html')).href;
 test.beforeEach(async({page})=>{await page.goto(url);});
 test('opens directly from file, has no errors or network access and both 240x320 SVGs',async({page})=>{
   const errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));

@@ -1,5 +1,5 @@
 const {test,expect}=require('@playwright/test'),{pathToFileURL}=require('node:url'),path=require('node:path');
-test.beforeEach(async({page})=>page.goto(pathToFileURL(path.resolve(__dirname,'../index.html')).href));
+test.beforeEach(async({page})=>page.goto(pathToFileURL(path.resolve(process.env.DMC_PREVIEW_ROOT||path.resolve(__dirname,'..'),'index.html')).href));
 test('offline reference screens have valid dimensions and no external requests',async({page})=>{
   const errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(/^https?:/.test(r.url()))requests.push(r.url());});await page.reload();
   await expect(page.locator('#nav-pt svg')).toHaveAttribute('viewBox','0 0 240 320');
