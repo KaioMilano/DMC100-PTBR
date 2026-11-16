@@ -20,3 +20,24 @@ jobs:
           python-version: ${{ matrix.python }}
       - name: Executar testes offline
         run: python -m unittest discover -s tests -v
+  simulator:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: simulator
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: simulator/package-lock.json
+      - run: npm ci
+      - name: Testar catálogo e modelo de renderização
+        run: npm test
+      - name: Preparar Chromium para testes locais de arquivo
+        run: npx playwright install --with-deps chromium
+      - name: Testar interface offline no navegador
+        run: npm run test:browser

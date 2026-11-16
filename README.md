@@ -23,7 +23,7 @@ Equipamento de referência: **DMC-100 V1.3**. A amostra V1.4 foi analisada offli
 | Inspeção estática com testes | Disponível |
 | Validar offsets no arquivo V1.4 analisado | 14/14 textos com NUL confirmados |
 | Mapear JPEGs/fontes | Oito tabelas de fontes; imagens externas pendentes |
-| Modelo paramétrico offline | Disponível; fontes reais pendentes |
+| Simulador visual offline | Disponível, autoral, 240 × 320; fontes reais não emuladas |
 | Testes metrológicos e revisão independente | Pendente |
 | Firmware instalável | **Indisponível** |
 
@@ -55,11 +55,21 @@ python -m src.dmc100_ptbr.layout --width 220 --cell 12
 
 Os três testes de integração com a amostra privada só rodam quando `DMC100_V14_PATH` aponta explicitamente para o arquivo local. A CI executa 24 testes sintéticos e ignora os três privados; nunca baixa firmware. Veja os comandos e resultados no relatório do binário.
 
+## Simulador visual offline
+
+Abra `simulator/index.html` no navegador, mantendo os arquivos da pasta juntos. Não exige instalação nem conexão à internet. Compare Medição, Configurações, Histórico, Sobre e Avisos em inglês/PT-BR, com fontes de 12/16/24/32 px, abreviações, acentos e diagnóstico de excesso. A geometria é 240 × 320; composição, gráficos e ícones são próprios, com leituras fictícias. Não emula o firmware nem carrega seus recursos.
+
+O catálogo visual registra 15 rótulos ingleses confirmados em 20 ocorrências e dez rótulos autorais identificados como tal. Exporte o catálogo em JSON ou cada tela em SVG. [Manual e testes](simulator/README.md) · [Resultados visuais e limitações](docs/SIMULADOR_VISUAL.md).
+
+![Comparação autoral em inglês e português](docs/images/comparacao-quatro-telas.png)
+
 ## Documentação
 
 - [Estudo técnico](docs/ESTUDO_TECNICO_INICIAL.md)
 - [Auditoria, viabilidade e resultados dos testes](docs/VIABILIDADE_V14.md)
 - [Análise do binário V1.4: hash, base de carga e fontes](docs/ANALISE_V14_BINARIO.md)
+- [Simulador visual e resultados da fase 02](docs/SIMULADOR_VISUAL.md)
+- [Dependências de recursos gráficos externos](docs/RECURSOS_EXTERNOS.md)
 - [Roteiro de desenvolvimento](docs/ROADMAP.md)
 - [Traduções preliminares](docs/TRADUCOES.md)
 - [Segurança técnica](docs/SEGURANCA.md)
