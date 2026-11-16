@@ -62,5 +62,5 @@ jobs:
           python-version: '3.12'
       - name: Instalar ferramentas opcionais de CPU virtual
         run: python -m pip install -r requirements-arm.txt
-      - name: Executar dispatcher autoral em ARM com dados sintéticos
-        run: python -m unittest discover -s tests -p "test_arm*.py" -v
+      - name: Executar suíte pública com motores ARM opcionais
+        run: python -m unittest discover -s tests -v
