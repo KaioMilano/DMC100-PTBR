@@ -16,6 +16,8 @@ Equipamento de referência: **DMC-100 V1.3**. A amostra V1.4 foi analisada offli
 
 ## Estado
 
+Avanço posterior: [roteamento de entradas e textos executado em ARM](docs/ROTEAMENTO_ARM.md), com duas alterações **somente na cópia ROM virtual**, arquivo original intacto e comparação diferencial. Os endereços auxiliares são exclusivos do emulador; não foi gerado firmware para gravação.
+
 Integração experimental: [seletor, menu V1.4 e glifos acentuados coexistem numa CPU virtual](docs/INTEGRACAO_ARM_UI.md). O renderizador autoral usa uma fonte compacta de 286 bytes nos quatro tamanhos; nenhuma imagem instalável foi gerada. Eventos, redirecionamento e LCD ainda dependem do ambiente de teste.
 
 Preparação do primeiro teste real: há duas unidades V1.3. A execução virtual do menu original V1.4 confirmou que o valor 2 ainda mantém o menu inglês de duas opções. [Investigação do menu, atualização e recuperação](docs/PRIMEIRO_TESTE_REAL.md). Nenhuma imagem instalável foi gerada.
