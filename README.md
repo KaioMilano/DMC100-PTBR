@@ -16,6 +16,8 @@ Equipamento de referência: **DMC-100 V1.3**. A amostra V1.4 foi analisada offli
 
 ## Estado
 
+Integração experimental: [seletor, menu V1.4 e glifos acentuados coexistem numa CPU virtual](docs/INTEGRACAO_ARM_UI.md). O renderizador autoral usa uma fonte compacta de 286 bytes nos quatro tamanhos; nenhuma imagem instalável foi gerada. Eventos, redirecionamento e LCD ainda dependem do ambiente de teste.
+
 Preparação do primeiro teste real: há duas unidades V1.3. A execução virtual do menu original V1.4 confirmou que o valor 2 ainda mantém o menu inglês de duas opções. [Investigação do menu, atualização e recuperação](docs/PRIMEIRO_TESTE_REAL.md). Nenhuma imagem instalável foi gerada.
 
 Atualização de 16/11/2026: o objetivo passou a incluir integração real PT-BR. **Firmware instalável ainda não está pronto**: faltam recursos UI, revisão de hardware, recuperação e validações. [Mapa técnico e impedimentos](docs/INTEGRACAO_FIRMWARE.md). A confirmação do objetivo não substitui esses requisitos.
