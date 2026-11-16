@@ -1,5 +1,7 @@
 # Integração real PT-BR — situação e bloqueios
 
+Atualização de 16/11/2026: o mantenedor optou por avançar sem contato com o fabricante. Esse contato não é pré-requisito para continuar a engenharia independente. Foi implementada uma [prova ARM do despachante de textos](DESPACHANTE_ARM.md), executada em CPU virtual e comparada com a rotina original privada. Os itens abaixo descrevem a avaliação anterior e os limites para futura instalação, não uma obrigação de solicitar autorização para cada avanço offline.
+
 Data: 16/11/2026. Base: PR #8. O mantenedor confirmou que deseja avançar do simulador para firmware PT-BR destinado ao aparelho. A confirmação autoriza o desenvolvimento, mas não comprova prontidão técnica. Permanecem as restrições de preservar o original, não gravar no equipamento, não alterar medição/calibração/segurança e não publicar arquivos proprietários.
 
 **Resultado atual: firmware instalável não pronto. Nenhum binário modificado foi gerado.** O mantenedor informou não possuir cópia da pasta UI, identificação da revisão de hardware ou recuperação documentada. Esses dados não podem ser substituídos por testes do simulador.
@@ -56,8 +58,8 @@ Sete testes novos cobrem fingerprint desconhecido, caminhos/terminadores/duplica
 
 1. Pacote legítimo de recursos UI compatível com a revisão e confirmação de direitos para o uso/distribuição pretendidos.
 2. Identificação confiável da revisão e compatibilidade da amostra V1.4 com o aparelho V1.3 observado.
-3. Procedimento oficial de recuperação/restauração, independente de firmware experimental, sem executá-lo nesta fase.
+3. Procedimento de recuperação/restauração tecnicamente demonstrado, por documentação oficial ou investigação independente, sem executá-lo nesta fase.
 4. Contrato de atualização/integridade e mapa de memória completos; depois, implementação e testes de interface/idioma em ambiente apropriado.
 5. Revisão independente e validação das funcionalidades/avisos antes de classificar uma imagem como pronta para instalação. Testes offline não certificam o instrumento.
 
-O próximo insumo útil é a documentação/pacote original do fabricante ou distribuidor. Não é necessário abrir, atualizar ou instalar software no aparelho para solicitar essas informações. Um texto de solicitação está em `SOLICITACAO_FABRICANTE.md`; nenhuma mensagem foi enviada automaticamente.
+Documentação/pacotes legítimos do fabricante seriam insumos úteis, mas não condicionam a continuidade. O caminho ativo é emulação, testes diferenciais e código autoral. A caracterização de recursos pode usar investigação independente e substitutos autorais de teste, sem publicar ativos proprietários. O rascunho de solicitação ao fabricante continua opcional; nenhuma mensagem foi enviada.

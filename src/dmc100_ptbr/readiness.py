@@ -87,7 +87,7 @@ def assess_bytes(data: bytes, ui_directory: Path | None = None) -> dict:
     required = resource_requirements(data)
     inventory = resource_inventory(required, ui_directory)
     if not inventory["supplied"] or inventory["present"] < len(required):
-        report["blockers"].append("External UI resource copies missing or incomplete")
+        report["blockers"].append("External UI dependencies not yet characterized (local copies optional for ongoing emulation)")
     report.update({"profile_applied": True,
                    "settings": {"ram_base_hex": f"0x{bases[0]:08X}",
                                 "language_field_offset": 32,
