@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>DMC100-PTBR · Laboratório de tradução</title>
+  <link rel="icon" href="data:,"><link rel="stylesheet" href="style.css">
+  <script src="catalog.js" defer></script><script src="model.js" defer></script><script src="app.js" defer></script>
+</head>
+<body>
+  <header class="masthead"><a class="brand" href="index.html">DMC100<span>—PTBR</span></a><span class="pill">OFFLINE · INTERFACE AUTORAL</span><span class="phase">Pesquisa / fase 02</span></header>
+  <main>
+    <div class="intro"><p class="eyebrow">LABORATÓRIO DE TRADUÇÃO</p><h1>O mesmo espaço.<br>Uma nova linguagem.</h1><p>Compare os textos antes de pensar no firmware.<br>Leituras fictícias, gráficos próprios e nenhuma conexão com o aparelho.</p></div>
+    <div class="workspace">
+      <aside class="controls" aria-label="Controles do simulador">
+        <h2>01 <span>Telas</span></h2>
+        <nav id="screens" aria-label="Escolher tela">
+          <button data-screen="measurement" aria-pressed="true"><span>01</span>Medição <b>↗</b></button>
+          <button data-screen="settings" aria-pressed="false"><span>02</span>Configurações <b>↗</b></button>
+          <button data-screen="history" aria-pressed="false"><span>03</span>Histórico <b>↗</b></button>
+          <button data-screen="about" aria-pressed="false"><span>04</span>Sobre <b>↗</b></button>
+          <button data-screen="alerts" aria-pressed="false"><span>05</span>Avisos <b>↗</b></button>
+        </nav>
+        <h2>02 <span>Tipografia & texto</span></h2>
+        <label>Versão em português<select id="variant"><option value="compact">Compacta · com acentos</option><option value="full">Completa · com acentos</option><option value="ascii">Compacta · sem acentos</option></select></label>
+        <div class="control-row"><label>Tamanho<select id="font"><option>12</option><option selected>16</option><option>24</option><option>32</option></select></label><label>Fonte<select id="family"><option value="sans">Sem serifa</option><option value="mono">Monoespaçada</option></select></label></div>
+        <div class="control-row"><label>Ampliação<select id="scale"><option value="1">1× · pixel lógico</option><option value="1.5" selected>1,5×</option><option value="2">2×</option></select></label><label class="checkbox"><input id="grid" type="checkbox"> Grade de 8 px</label></div>
+        <label id="alert-control" hidden>Cenário<select id="alert"><option value="charging">Carregamento</option><option value="battery">Bateria fraca</option><option value="saved">Dados salvos</option></select></label>
+        <label>Experimentar título em PT-BR<input id="custom" type="text" maxlength="160" placeholder="Usar tradução do catálogo"></label>
+        <p class="micro">A fonte é do computador. Acentos visíveis aqui não demonstram suporte no equipamento.</p>
+      </aside>
+      <section class="comparison" aria-label="Comparação de idiomas">
+        <div class="comparison-heading"><h2 id="screen-name">Medição</h2><span>240 × 320 px por tela</span></div>
+        <div class="pair">
+          <article class="device-column"><div class="language"><span>EN</span><h3>English</h3><i>referência textual</i></div><div class="bezel"><div id="en" class="lcd" lang="en"></div></div><button class="export" data-export="en">Exportar SVG ↗</button></article>
+          <article class="device-column"><div class="language"><span>BR</span><h3>Português</h3><i>proposta em revisão</i></div><div class="bezel"><div id="pt" class="lcd" lang="pt-BR"></div></div><button class="export" data-export="pt">Exportar SVG ↗</button></article>
+        </div>
+        <div id="diagnostics" class="diagnostics" aria-live="polite"></div>
+        <div class="legend"><span class="dot"></span>Recursos próprios <span>·</span>Geometria original, composição autoral <span>·</span>Sem firmware</div>
+      </section>
+    </div>
+    <section class="evidence"><div><p class="eyebrow">VALIDAÇÃO, NÃO EMULAÇÃO</p><h2>O que esta tela consegue dizer.</h2><p>Medimos o texto renderizado no navegador e separamos largura, bytes e cobertura de fonte. Caber na tela não significa caber na flash.</p></div><div id="budget" class="budget"></div><div><h3>Dependências da tela</h3><p id="dependencies"></p><p class="micro">72 referências candidatas a JPEG sob UI. Imagens e partição externa não foram obtidas. O simulador não carrega esses arquivos.</p></div></section>
+    <details class="catalog-section"><summary>Catálogo bilíngue <span id="catalog-count"></span></summary><label>Filtrar textos ou offsets<input id="catalog-search" placeholder="Ex.: Language, medição, 0x006150"></label><div class="table-scroll"><table><thead><tr><th>Texto / evidência</th><th>Português completo</th><th>Compacto</th><th>Ocorrências no arquivo</th></tr></thead><tbody id="catalog-body"></tbody></table></div><p class="micro">Confirmado = texto e NUL observados na amostra V1.4 identificada por hash. Autoral = rótulo criado para o protótipo. Todos os textos PT-BR são propostas. Avisos, unidades e ações críticas requerem revisão técnica.</p><button id="export-catalog" class="export">Exportar catálogo JSON ↗</button></details>
+    <footer>Projeto comunitário, não oficial e sem vínculo com a FNIRSI. <strong>Nenhum firmware instalável.</strong><br>240 × 320 · Interface autoral · Dados sintéticos · Funciona sem internet</footer>
+  </main>
+</body>
+</html>

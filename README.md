@@ -57,11 +57,11 @@ Os três testes de integração com a amostra privada só rodam quando `DMC100_V
 
 ## Simulador visual offline
 
-Abra `simulator/index.html` no navegador, mantendo os arquivos da pasta juntos. Não exige instalação nem conexão à internet. Compare Medição, Configurações, Histórico, Sobre e Avisos em inglês/PT-BR, com fontes de 12/16/24/32 px, abreviações, acentos e diagnóstico de excesso. A geometria é 240 × 320; composição, gráficos e ícones são próprios, com leituras fictícias. Não emula o firmware nem carrega seus recursos.
+Abra `simulator/index.html` no navegador, mantendo os arquivos da pasta juntos. Não exige instalação nem internet. Navegue por Medição, Histórico, Configurações, Restaurar e Sobre em inglês/PT-BR. A composição orientada pelo vídeo privado V1.3 usa desenhos próprios, com geometria 240 × 320 e leituras fictícias. Botões e configurações atuam só no estado da página. Não emula firmware nem carrega seus recursos. A bancada anterior, com fontes, abreviações, acentos e cenários de aviso, continua em `simulator/lab.html`.
 
-O catálogo visual registra 15 rótulos ingleses confirmados em 20 ocorrências e dez rótulos autorais identificados como tal. Exporte o catálogo em JSON ou cada tela em SVG. [Manual e testes](simulator/README.md) · [Resultados visuais e limitações](docs/SIMULADOR_VISUAL.md).
+O catálogo básico registra 15 rótulos confirmados em 20 ocorrências; a navegação amplia para 16 em 21, além de rótulos do vídeo e autorais com evidência explícita. Exporte JSON ou SVG. [Manual e testes](simulator/README.md) · [Vídeo V1.3, comparação com V1.4 e limitações](docs/VIDEO_V13_NAVEGACAO.md).
 
-![Comparação autoral em inglês e português](docs/images/comparacao-quatro-telas.png)
+![Comparação autoral orientada pelo vídeo V1.3](docs/images/navegacao-v13-comparacao.png)
 
 ## Documentação
 
@@ -70,6 +70,7 @@ O catálogo visual registra 15 rótulos ingleses confirmados em 20 ocorrências 
 - [Análise do binário V1.4: hash, base de carga e fontes](docs/ANALISE_V14_BINARIO.md)
 - [Simulador visual e resultados da fase 02](docs/SIMULADOR_VISUAL.md)
 - [Dependências de recursos gráficos externos](docs/RECURSOS_EXTERNOS.md)
+- [Referência privada V1.3 e navegação autoral](docs/VIDEO_V13_NAVEGACAO.md)
 - [Roteiro de desenvolvimento](docs/ROADMAP.md)
 - [Traduções preliminares](docs/TRADUCOES.md)
 - [Segurança técnica](docs/SEGURANCA.md)

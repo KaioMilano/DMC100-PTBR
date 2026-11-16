@@ -10,7 +10,7 @@ const path=require('node:path');const {pathToFileURL}=require('node:url');
     await page.locator('#gallery section').last().waitFor();await page.evaluate(()=>document.fonts.ready);
     await page.screenshot({path:path.join(directory,'comparacao-quatro-telas.png'),fullPage:true});
     for(const screen of ['measurement','settings','history','about']) await page.locator(`section[data-screen="${screen}"]`).screenshot({path:path.join(directory,`comparacao-${screen}.png`)});
-    await page.goto(pathToFileURL(path.resolve(__dirname,'../index.html')).href);
+    await page.goto(pathToFileURL(path.resolve(__dirname,'../lab.html')).href);
     await page.locator('#scale').selectOption('1');await page.locator('[data-screen="settings"]').click();
     await page.locator('#variant').selectOption('full');await page.locator('#font').selectOption('32');
     await page.locator('.comparison').screenshot({path:path.join(directory,'estresse-fonte-32.png')});
