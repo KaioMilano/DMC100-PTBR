@@ -1,5 +1,7 @@
 # Referência privada V1.3 e navegação offline
 
+Registro do PR #7: a fase seguinte acrescenta uma [terceira opção PT-BR proposta no simulador](SELECAO_PTBR.md). As duas opções descritas no vídeo continuam sendo a evidência do firmware original; a terceira não foi observada no equipamento.
+
 Data: 15/11/2026. Base desta fase: PR #6 (`75a7d24`), empilhado sobre #5. O vídeo e os quadros extraídos permaneceram privados e ignorados pelo Git. Este documento publica somente observações, horários relativos e desenhos autorais. Não inclui nome/caminho do vídeo, dados pessoais, quadros ou leituras reais gravadas.
 
 ## Avaliação técnica anterior à implementação

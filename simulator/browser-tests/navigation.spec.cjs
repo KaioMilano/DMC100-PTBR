@@ -6,6 +6,26 @@ test('offline reference screens have valid dimensions and no external requests',
   for(const area of ['measurement','history','settings','reset','about']){await page.locator(`[data-go="${area}"]`).click();expect(await page.evaluate(()=>DmcNavigatorState.issues)).toEqual([]);}
   expect(errors).toEqual([]);expect(requests).toEqual([]);
 });
+test('Portuguese menu selection applies only after explicit confirmation and follows chosen locale',async({page})=>{
+  await page.locator('[data-go="settings"]').click();
+  await expect(page.locator('#nav-pt [data-label="option2"]')).toHaveText('Português (BR) *');
+  await page.locator('#nav-pt [data-action="OPTION"][data-index="2"]').click();
+  expect(await page.evaluate(()=>DmcNavigatorState.state.settings.language)).toBe(1);
+  await page.locator('#cancel-language').click();expect(await page.evaluate(()=>DmcNavigatorState.state.settings.language)).toBe(1);
+  await page.locator('#nav-pt [data-action="OPTION"][data-index="2"]').click();await page.locator('#apply-language').click();
+  await expect(page.locator('#nav-language')).toHaveValue('selected');await expect(page.locator('[data-panel="en"]')).toBeHidden();
+  await expect(page.locator('#nav-feedback')).toContainText('pt-BR');await page.locator('[data-go="history"]').click();
+  await expect(page.locator('#nav-pt [data-label="title"]')).toHaveText('Histórico');
+});
+test('English and Chinese remain selectable and preview does not override the saved model locale',async({page})=>{
+  await page.locator('[data-go="settings"]').click();
+  await page.locator('#nav-pt [data-action="OPTION"][data-index="0"]').click();await page.locator('#apply-language').click();
+  await expect(page.locator('[data-panel="zh"]')).toBeVisible();await expect(page.locator('#nav-zh [data-label="title"]')).toHaveText('系统设置');
+  await expect(page.locator('#nav-evidence')).toContainText('prévia autoral não validada');
+  await page.locator('#nav-zh [data-action="OPTION"][data-index="1"]').click();await page.locator('#apply-language').click();
+  await expect(page.locator('[data-panel="en"]')).toBeVisible();await expect(page.locator('#nav-en [data-label="title"]')).toHaveText('System settings');
+  await page.locator('#nav-language').selectOption('pt');expect(await page.evaluate(()=>DmcNavigatorState.state.settings.language)).toBe(1);
+});
 test('physical controls navigate tabs and change menu focus',async({page})=>{
   await page.locator('#menu-toggle').click();await page.locator('[data-key="RIGHT"]').click();
   await expect(page.locator('#nav-pt [data-label="title"]')).toHaveText('Configurações');

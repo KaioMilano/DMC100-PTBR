@@ -57,6 +57,8 @@ Os três testes de integração com a amostra privada só rodam quando `DMC100_V
 
 ## Simulador visual offline
 
+**Português (Brasil) já é selecionável no menu do protótipo:** Configurações → Idioma → Português (BR) * → Confirmar idioma. Chinês e inglês são mantidos. É uma proposta offline; não acrescenta idioma ao equipamento. [Estado da seleção e próximos passos](docs/SELECAO_PTBR.md).
+
 Abra `simulator/index.html` no navegador, mantendo os arquivos da pasta juntos. Não exige instalação nem internet. Navegue por Medição, Histórico, Configurações, Restaurar e Sobre em inglês/PT-BR. A composição orientada pelo vídeo privado V1.3 usa desenhos próprios, com geometria 240 × 320 e leituras fictícias. Botões e configurações atuam só no estado da página. Não emula firmware nem carrega seus recursos. A bancada anterior, com fontes, abreviações, acentos e cenários de aviso, continua em `simulator/lab.html`.
 
 O catálogo básico registra 15 rótulos confirmados em 20 ocorrências; a navegação amplia para 16 em 21, além de rótulos do vídeo e autorais com evidência explícita. Exporte JSON ou SVG. [Manual e testes](simulator/README.md) · [Vídeo V1.3, comparação com V1.4 e limitações](docs/VIDEO_V13_NAVEGACAO.md).

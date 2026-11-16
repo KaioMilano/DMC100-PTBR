@@ -1,6 +1,6 @@
 {
   "name": "dmc100-offline-simulator",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "description": "Authorial offline translation workbench; no firmware or device access",
   "scripts": {
