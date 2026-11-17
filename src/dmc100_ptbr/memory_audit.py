@@ -19,6 +19,7 @@ def audit(data):
         raise ValueError("Requires observed V1.4 fingerprint")
     end = LOAD_BASE+len(data)
     ram = inventory(data,0x20000000,0x20008000)
+    source,zero_start,zero_size,zero_function = struct.unpack_from('<4I',data,0x17640)
     return {"sha256":OBSERVED_SHA256,"app_start":LOAD_BASE,"app_end_exclusive":end,
             "bootloader_present":False,"physical_ram_revision_verified":False,
             "aligned_ram_literal_candidates":ram,
@@ -27,6 +28,16 @@ def audit(data):
             "emulator_state_address":0x20001000,
             "state_address_literal_occurrences":[r["file_offset"] for r in ram if r["value"] == 0x20001000],
             "state_ram_reservation_proven":False,"gap_free_space_proven":False,
+            "reviewed_gap_candidate_classification":{
+                "0x21FC":"Thumb SUB.W instruction, not a pointer",
+                "0x6A28":"Thumb MOV.W instruction, not a pointer",
+                "0x7A34":"Thumb MOV.W instruction, not a pointer",
+                "0x9928":"Thumb ADD.W instruction, not a pointer",
+                "0x17640":"Source field of zero-initialization descriptor; zero routine does not read it"},
+            "reviewed_state_candidate_classification":"0x132E4 lies in paired 24px glyph table; not evidence of a RAM reference",
+            "startup_zero_region":{"start":zero_start,"end_exclusive":zero_start+zero_size,
+                                   "bytes":zero_size,"function":zero_function,
+                                   "artificial_state_inside":zero_start<=0x20001000<zero_start+zero_size},
             "firmware_generated":False,"installable_ready":False,
             "limits":"Aligned words may be data, instructions or pointers. Absence does not exclude computed addresses, heap, stack, DMA or indirect references. No placement is approved."}
 

@@ -1,5 +1,15 @@
 # Inventário para posicionamento físico
 
+## Classificação posterior e inicialização
+
+Revisão posterior de 16/11/2026: os candidatos 0x21FC, 0x6A28, 0x7A34 e 0x9928 são instruções Thumb de 32 bits (SUB.W/MOV.W/MOV.W/ADD.W), não ponteiros para o intervalo. A ocorrência 0x132E4 está dentro da tabela de glifos de pares 24px, não constitui evidência de acesso a RAM. O inventário inicial abaixo permanece como histórico de candidatos, não como ocupação comprovada.
+
+O campo em 0x17640 pertence a um descritor de inicialização: origem 0x0801E6F0, destino 0x200000A0, tamanho 0x71A0 e função 0x080071C8. Essa função zera o destino e não lê a origem. Assim, esse valor também não demonstra dados necessários no intervalo após o fim do arquivo.
+
+A rotina original de limpeza foi executada isoladamente em Unicorn, com a RAM preenchida por canário 0xA5 e ROM protegida. Resultado: exatamente 29.088 bytes entre 0x200000A0 e 0x20007240 foram zerados; prefixo e sufixo permaneceram intactos. Não foi executado boot completo nem periférico. O estado artificial PT-BR em 0x20001000 fica dentro dessa região original inicializada. Isso não identifica qual objeto utiliza esse endereço, mas impede pressupor uma reserva independente para o protótipo.
+
+Eliminar esses falsos positivos não comprova espaço livre de flash. A ocupação dinâmica da RAM, heap/pilha, mapa físico completo, botões, persistência e recuperação continuam pendentes. O teste isolado não autoriza instalar a tradução hoje.
+
 16/11/2026. Base PR #14. A imagem V1.4 observada termina em 0x0801E6F0. O intervalo até 0x0801F400 não é uma reserva demonstrada.
 
 `python -m src.dmc100_ptbr.memory_audit private/firmware/APP_DMC-100_V1.4_250524.bin` exige o fingerprint conhecido, lê palavras alinhadas e produz apenas metadados. Não extrai recursos ou cria imagem.
